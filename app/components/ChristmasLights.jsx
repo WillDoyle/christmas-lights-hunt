@@ -144,7 +144,6 @@ const ChristmasLightsMap = () => {
             console.error('Error geocoding address:', error);
         }
     };
-
     return (
         <div className="h-screen w-full bg-gradient-to-br from-green-50 to-red-50">
             <Card className="w-full h-full border-none bg-white/80 backdrop-blur-sm">
