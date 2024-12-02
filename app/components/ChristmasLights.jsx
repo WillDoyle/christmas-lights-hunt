@@ -139,6 +139,17 @@ const ChristmasLightsMap = () => {
                     zoom: 16,
                     duration: 1000
                 });
+
+                // Scroll to map on mobile
+                if (window.innerWidth < 768) { // md breakpoint
+                    const mapElement = document.getElementById('map');
+                    if (mapElement) {
+                        mapElement.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                }
             }
         } catch (error) {
             console.error('Error geocoding address:', error);
@@ -152,9 +163,9 @@ const ChristmasLightsMap = () => {
                     <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6">
                         <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
                             <div className="flex-1">
-                                <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900">
-                                    Christmas Light Hunt
-                                    <span className="block text-sm text-gray-500 font-normal mt-0.5">
+                                <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900 font-outfit">
+                                    Will & Lixey&apos;s Christmas Light Hunt
+                                    <span className="block text-sm text-gray-500 font-normal mt-0.5 font-outfit">
                                         Brisbane & Moreton Bay Region
                                     </span>
                                 </h1>
@@ -165,7 +176,7 @@ const ChristmasLightsMap = () => {
                                 <Input
                                     type="text"
                                     placeholder="Search locations..."
-                                    className="w-full pl-10 h-9 bg-gray-100/50 border-0 rounded-xl text-sm placeholder:text-gray-400 focus:ring-2 focus:ring-gray-900/10 focus:bg-white/50"
+                                    className="w-full pl-10 h-9 bg-gray-100/50 border-0 rounded-xl text-sm font-outfit placeholder:text-gray-400 focus:ring-2 focus:ring-gray-900/10 focus:bg-white/50"
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
@@ -175,7 +186,8 @@ const ChristmasLightsMap = () => {
                 </div>
 
                 {/* Main Content */}
-                <div className="pt-28 md:pt-24 pb-6 px-4 sm:px-6">
+                <div className="pt-44 md:pt-24 pb-6 px-4 sm:px-6">
+                    <h1 className="text-gray-400 text-2xl font-outfit">Locations</h1>
                     <div className="max-w-7xl mx-auto">
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                             {/* Sidebar */}
