@@ -145,22 +145,22 @@ const ChristmasLightsMap = () => {
         }
     };
     return (
-        <div className="h-screen w-full bg-gradient-to-br from-green-50 to-red-50">
-            <Card className="w-full h-full border-none bg-white/80 backdrop-blur-sm">
-                <CardHeader className="pb-4">
-                    <CardTitle className="flex items-center justify-between">
-                        <span className="font-outfit text-3xl font-black bg-gradient-to-r from-green-600 to-red-600 text-transparent bg-clip-text tracking-tight">
+        <div className="min-h-screen w-full bg-gradient-to-br from-green-50 to-red-50">
+            <Card className="w-full min-h-screen border-none bg-white/80 backdrop-blur-sm">
+                <CardHeader className="pb-4 space-y-4">
+                    <CardTitle className="flex flex-col space-y-4 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between">
+                        <span className="font-outfit text-2xl sm:text-3xl font-black bg-gradient-to-r from-green-600 to-red-600 text-transparent bg-clip-text tracking-tight">
                             Will and Lixey&apos;s Christmas Light Hunt
-                            <span className="block text-base font-medium text-gray-500 mt-1">
+                            <span className="block text-sm sm:text-base font-medium text-gray-500 mt-1">
                                 Brisbane & Moreton Bay Region
                             </span>
                         </span>
-                        <div className="relative w-72">
+                        <div className="relative w-full sm:w-72">
                             <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
                             <Input
                                 type="text"
                                 placeholder="Search suburbs or streets..."
-                                className="pl-8 border-2 border-gray-200 focus:border-green-500 transition-colors rounded-xl font-outfit"
+                                className="pl-8 border-2 border-gray-200 focus:border-green-500 transition-colors rounded-xl font-outfit w-full"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
@@ -168,8 +168,26 @@ const ChristmasLightsMap = () => {
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="p-0">
-                    <div className="grid grid-cols-1 md:grid-cols-4 h-full">
-                        <div className="p-4 border-r overflow-y-auto max-h-[calc(100vh-10rem)] bg-white/50">
+                    <div className="grid grid-cols-1 md:grid-cols-4 min-h-[calc(100vh-8rem)]">
+                        {/* Mobile Tab Bar */}
+                        <div className="md:hidden flex justify-center border-b bg-white sticky top-0 z-10">
+                            <button
+                                onClick={() => document.getElementById('locationsList').scrollIntoView({ behavior: 'smooth' })}
+                                className="flex-1 py-3 text-center font-medium text-gray-600 border-b-2 border-green-500"
+                            >
+                                Locations List
+                            </button>
+                            <button
+                                onClick={() => document.getElementById('map').scrollIntoView({ behavior: 'smooth' })}
+                                className="flex-1 py-3 text-center font-medium text-gray-600 border-b-2 border-transparent"
+                            >
+                                Map View
+                            </button>
+                        </div>
+
+                        {/* Locations List */}
+                        <div id="locationsList" className="p-4 border-r overflow-y-auto md:max-h-[calc(100vh-10rem)] bg-white/50">
+                            <h2 className="md:hidden font-outfit text-lg font-bold mb-4">All Locations</h2>
                             {Object.entries(locations)
                                 .filter(([suburb, streets]) => {
                                     const search = searchTerm.toLowerCase();
@@ -189,7 +207,13 @@ const ChristmasLightsMap = () => {
                                             {streets.map((street) => (
                                                 <li
                                                     key={street}
-                                                    onClick={() => handleStreetClick(suburb, street)}
+                                                    onClick={() => {
+                                                        handleStreetClick(suburb, street);
+                                                        // On mobile, scroll to map after selection
+                                                        if (window.innerWidth < 768) {
+                                                            document.getElementById('map').scrollIntoView({ behavior: 'smooth' });
+                                                        }
+                                                    }}
                                                     className={`font-outfit text-sm cursor-pointer transition-all duration-200
                                                         ${selectedLocation?.street === street
                                                             ? 'text-green-600 font-semibold scale-102'
@@ -204,11 +228,12 @@ const ChristmasLightsMap = () => {
                                 ))}
                         </div>
 
-                        <div className="col-span-3 h-[calc(100vh-10rem)] relative">
+                        {/* Map Container */}
+                        <div id="map" className="col-span-1 md:col-span-3 h-[50vh] md:h-[calc(100vh-10rem)] relative">
                             <div ref={mapRef} className="w-full h-full rounded-xl overflow-hidden" />
                             <div
                                 ref={popupRef}
-                                className="absolute bg-white p-4 rounded-xl shadow-lg border-2 border-green-500/20 font-outfit min-w-[200px]"
+                                className="absolute bg-white p-4 rounded-xl shadow-lg border-2 border-green-500/20 font-outfit min-w-[200px] max-w-[90vw] md:max-w-[300px]"
                             >
                                 {selectedLocation && (
                                     <div className="space-y-3">
