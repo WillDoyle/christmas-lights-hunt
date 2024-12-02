@@ -145,124 +145,119 @@ const ChristmasLightsMap = () => {
         }
     };
     return (
-        <div className="min-h-screen w-full bg-gradient-to-br from-green-50 to-red-50">
-            <Card className="w-full min-h-screen border-none bg-white/80 backdrop-blur-sm">
-                <CardHeader className="pb-4 space-y-4">
-                    <CardTitle className="flex flex-col space-y-4 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between">
-                        <span className="font-outfit text-2xl sm:text-3xl font-black bg-gradient-to-r from-green-600 to-red-600 text-transparent bg-clip-text tracking-tight">
-                            Will and Lixey&apos;s Christmas Light Hunt
-                            <span className="block text-sm sm:text-base font-medium text-gray-500 mt-1">
-                                Brisbane & Moreton Bay Region
-                            </span>
-                        </span>
-                        <div className="relative w-full sm:w-72">
-                            <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
-                            <Input
-                                type="text"
-                                placeholder="Search suburbs or streets..."
-                                className="pl-8 border-2 border-gray-200 focus:border-green-500 transition-colors rounded-xl font-outfit w-full"
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                            />
-                        </div>
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="p-0">
-                    <div className="grid grid-cols-1 md:grid-cols-4 min-h-[calc(100vh-8rem)]">
-                        {/* Mobile Tab Bar */}
-                        <div className="md:hidden flex justify-center border-b bg-white sticky top-0 z-10">
-                            <button
-                                onClick={() => document.getElementById('locationsList').scrollIntoView({ behavior: 'smooth' })}
-                                className="flex-1 py-3 text-center font-medium text-gray-600 border-b-2 border-green-500"
-                            >
-                                Locations List
-                            </button>
-                            <button
-                                onClick={() => document.getElementById('map').scrollIntoView({ behavior: 'smooth' })}
-                                className="flex-1 py-3 text-center font-medium text-gray-600 border-b-2 border-transparent"
-                            >
-                                Map View
-                            </button>
-                        </div>
-
-                        {/* Locations List */}
-                        <div id="locationsList" className="p-4 border-r overflow-y-auto md:max-h-[calc(100vh-10rem)] bg-white/50">
-                            <h2 className="md:hidden font-outfit text-lg font-bold mb-4">All Locations</h2>
-                            {Object.entries(locations)
-                                .filter(([suburb, streets]) => {
-                                    const search = searchTerm.toLowerCase();
-                                    return suburb.toLowerCase().includes(search) ||
-                                        streets.some(street => street.toLowerCase().includes(search));
-                                })
-                                .map(([suburb, streets]) => (
-                                    <div key={suburb} className="mb-6 hover:bg-white/80 p-3 rounded-xl transition-all duration-200">
-                                        <h3 className="font-outfit text-sm font-bold text-green-700 flex items-center">
-                                            <MapPin className="h-4 w-4 mr-1" />
-                                            {suburb}
-                                            <span className="ml-2 text-xs text-gray-500 font-medium">
-                                                ({streets.length} locations)
-                                            </span>
-                                        </h3>
-                                        <ul className="mt-2 ml-5 space-y-2">
-                                            {streets.map((street) => (
-                                                <li
-                                                    key={street}
-                                                    onClick={() => {
-                                                        handleStreetClick(suburb, street);
-                                                        // On mobile, scroll to map after selection
-                                                        if (window.innerWidth < 768) {
-                                                            document.getElementById('map').scrollIntoView({ behavior: 'smooth' });
-                                                        }
-                                                    }}
-                                                    className={`font-outfit text-sm cursor-pointer transition-all duration-200
-                                                        ${selectedLocation?.street === street
-                                                            ? 'text-green-600 font-semibold scale-102'
-                                                            : 'text-gray-600 hover:text-green-600 hover:translate-x-1'
-                                                        }`}
-                                                >
-                                                    {selectedLocation?.street === street ? '📍' : '🎄'} {street}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                ))}
-                        </div>
-
-                        {/* Map Container */}
-                        <div id="map" className="col-span-1 md:col-span-3 h-[50vh] md:h-[calc(100vh-10rem)] relative">
-                            <div ref={mapRef} className="w-full h-full rounded-xl overflow-hidden" />
-                            <div
-                                ref={popupRef}
-                                className="absolute bg-white p-4 rounded-xl shadow-lg border-2 border-green-500/20 font-outfit min-w-[200px] max-w-[90vw] md:max-w-[300px]"
-                            >
-                                {selectedLocation && (
-                                    <div className="space-y-3">
-                                        <div>
-                                            <div className="font-bold text-green-700 text-lg">
-                                                🎄 {selectedLocation.street}
-                                            </div>
-                                            <div className="text-gray-600">
-                                                {selectedLocation.suburb}
-                                            </div>
-                                        </div>
-
-                                        <a
-                                            href={`https://www.google.com/maps/search/?api=1&query=${selectedLocation.street}+${selectedLocation.suburb}+Brisbane+QLD`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="flex items-center justify-center gap-2 text-sm bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors w-full font-medium"
-                                        >
-                                            <Navigation className="h-4 w-4" />
-                                            Open in Google Maps
-                                            <ExternalLink className="h-3 w-3" />
-                                        </a>
-                                    </div>
-                                )}
+        <div className="min-h-screen w-full bg-[#f5f5f7]">
+            <div className="w-full min-h-screen relative">
+                {/* Header */}
+                <div className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-xl z-20 border-b border-gray-200/50">
+                    <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6">
+                        <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+                            <div className="flex-1">
+                                <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900">
+                                    Christmas Light Hunt
+                                    <span className="block text-sm text-gray-500 font-normal mt-0.5">
+                                        Brisbane & Moreton Bay Region
+                                    </span>
+                                </h1>
+                            </div>
+                            <div className="relative w-full sm:w-72">
+                                <div className="absolute inset-0 bg-gray-100/50 rounded-xl backdrop-blur-sm -z-10" />
+                                <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                                <Input
+                                    type="text"
+                                    placeholder="Search locations..."
+                                    className="w-full pl-10 h-9 bg-gray-100/50 border-0 rounded-xl text-sm placeholder:text-gray-400 focus:ring-2 focus:ring-gray-900/10 focus:bg-white/50"
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                />
                             </div>
                         </div>
                     </div>
-                </CardContent>
-            </Card>
+                </div>
+
+                {/* Main Content */}
+                <div className="pt-28 md:pt-24 pb-6 px-4 sm:px-6">
+                    <div className="max-w-7xl mx-auto">
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                            {/* Sidebar */}
+                            <div className="md:col-span-1">
+                                <div className="bg-white/70 backdrop-blur-xl rounded-2xl shadow-sm border border-gray-200/50">
+                                    <div className="p-4">
+                                        <div className="space-y-4">
+                                            {Object.entries(locations)
+                                                .filter(([suburb, streets]) => {
+                                                    const search = searchTerm.toLowerCase();
+                                                    return suburb.toLowerCase().includes(search) ||
+                                                        streets.some(street => street.toLowerCase().includes(search));
+                                                })
+                                                .map(([suburb, streets]) => (
+                                                    <div key={suburb}
+                                                        className="pb-4 last:pb-0 border-b last:border-0 border-gray-100">
+                                                        <h3 className="flex items-center text-sm font-medium text-gray-900">
+                                                            <MapPin className="h-4 w-4 mr-1.5 text-gray-400" />
+                                                            {suburb}
+                                                            <span className="ml-auto text-xs text-gray-400">
+                                                                {streets.length}
+                                                            </span>
+                                                        </h3>
+                                                        <ul className="mt-2 ml-6 space-y-1.5">
+                                                            {streets.map((street) => (
+                                                                <li
+                                                                    key={street}
+                                                                    onClick={() => handleStreetClick(suburb, street)}
+                                                                    className={`text-sm cursor-pointer transition-all
+                                                                        ${selectedLocation?.street === street
+                                                                            ? 'text-blue-600 font-medium'
+                                                                            : 'text-gray-600 hover:text-gray-900'
+                                                                        }`}
+                                                                >
+                                                                    {selectedLocation?.street === street ? '📍' : '·'} {street}
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    </div>
+                                                ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Map */}
+                            <div className="md:col-span-3">
+                                <div className="bg-white/70 backdrop-blur-xl rounded-2xl shadow-sm border border-gray-200/50 overflow-hidden h-[calc(100vh-8rem)]">
+                                    <div ref={mapRef} className="w-full h-full" />
+                                    <div
+                                        ref={popupRef}
+                                        className="absolute bg-white/90 backdrop-blur-xl p-4 rounded-2xl shadow-lg border border-gray-200/50 min-w-[240px] max-w-[90vw] md:max-w-[320px]"
+                                    >
+                                        {selectedLocation && (
+                                            <div className="space-y-3">
+                                                <div className="space-y-1">
+                                                    <div className="font-medium text-gray-900">
+                                                        {selectedLocation.street}
+                                                    </div>
+                                                    <div className="text-sm text-gray-500">
+                                                        {selectedLocation.suburb}
+                                                    </div>
+                                                </div>
+
+                                                <a
+                                                    href={`https://www.google.com/maps/search/?api=1&query=${selectedLocation.street}+${selectedLocation.suburb}+Brisbane+QLD`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="flex items-center justify-center gap-2 text-sm bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-xl transition-colors w-full font-medium"
+                                                >
+                                                    <Navigation className="h-4 w-4" />
+                                                    Open in Maps
+                                                </a>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };
