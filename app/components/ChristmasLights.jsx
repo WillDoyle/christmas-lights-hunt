@@ -150,49 +150,11 @@ const ChristmasLightsMap = () => {
     };
 
     useEffect(() => {
-        // Initialize sources
-        const suburbSource = new VectorSource();
+        // Initialize source for location markers
         const locationSource = new VectorSource();
         vectorSourceRef.current = locationSource;
 
-        // Add suburb features
-        Object.entries(SUBURB_COORDINATES).forEach(([suburb, coords]) => {
-            const feature = new Feature({
-                geometry: new Point(fromLonLat(coords)),
-                name: suburb,
-                type: 'suburb'
-            });
-            suburbSource.addFeature(feature);
-        });
-
-        // Create cluster source
-        const clusterSource = new Cluster({
-            distance: 40,
-            source: suburbSource,
-            minDistance: 20
-        });
-
-        // Styles for different features
-        const suburbStyle = new Style({
-            image: new Circle({
-                radius: 6,
-                fill: new Fill({ color: 'rgba(66, 135, 245, 0.8)' }),
-                stroke: new Stroke({ color: 'white', width: 1.5 })
-            }),
-            text: new Text({
-                font: '12px Outfit',
-                textAlign: 'left',
-                textBaseline: 'middle',
-                offsetX: 12,
-                offsetY: 0,
-                fill: new Fill({ color: '#374151' }),
-                stroke: new Stroke({
-                    color: 'white',
-                    width: 3
-                })
-            })
-        });
-
+        // Style for location markers
         const locationStyle = new Style({
             image: new Circle({
                 radius: 8,
@@ -207,39 +169,7 @@ const ChristmasLightsMap = () => {
             })
         });
 
-        // Style function for clusters
-        const styleFunction = (feature) => {
-            const size = feature.get('features').length;
-            if (size === 1) {
-                // Single feature
-                const actualFeature = feature.get('features')[0];
-                const customStyle = suburbStyle.clone();
-                customStyle.getText().setText(actualFeature.get('name'));
-                return customStyle;
-            }
-
-            // Cluster of features
-            return new Style({
-                image: new Circle({
-                    radius: Math.min(size * 3, 20),
-                    fill: new Fill({ color: 'rgba(66, 135, 245, 0.8)' }),
-                    stroke: new Stroke({ color: 'white', width: 2 })
-                }),
-                text: new Text({
-                    text: size.toString(),
-                    fill: new Fill({ color: 'white' }),
-                    font: 'bold 12px Outfit'
-                })
-            });
-        };
-
-        // Create layers
-        const clusterLayer = new VectorLayer({
-            source: clusterSource,
-            style: styleFunction,
-            zIndex: 1
-        });
-
+        // Create vector layer for location markers
         const locationLayer = new VectorLayer({
             source: locationSource,
             style: locationStyle,
@@ -251,7 +181,6 @@ const ChristmasLightsMap = () => {
             target: mapRef.current,
             layers: [
                 new TileLayer({ source: new OSM() }),
-                clusterLayer,
                 locationLayer
             ],
             view: new View({
@@ -260,42 +189,19 @@ const ChristmasLightsMap = () => {
             })
         });
 
-        // Handle cluster clicks
+        // Handle map clicks
         map.on('click', (event) => {
             const feature = map.forEachFeatureAtPixel(event.pixel, (feature) => feature);
 
             if (feature) {
-                const features = feature.get('features');
-
-                if (features && features.length > 1) {
-                    // Cluster clicked
-                    const extent = boundingExtent(
-                        features.map(f => f.getGeometry().getCoordinates())
-                    );
-                    map.getView().fit(extent, {
-                        duration: 1000,
-                        padding: [50, 50, 50, 50],
-                        easing: easeOut
-                    });
-                } else if (features && features.length === 1) {
-                    // Single suburb clicked
-                    const coords = features[0].getGeometry().getCoordinates();
-                    map.getView().animate({
-                        center: coords,
-                        zoom: Math.max(map.getView().getZoom(), 14),
-                        duration: 1000
-                    });
-                } else {
-                    // Location marker clicked
+                const properties = feature.getProperties();
+                if (properties.suburb && properties.street) {
                     const coords = feature.getGeometry().getCoordinates();
-                    const properties = feature.getProperties();
-                    if (properties.suburb && properties.street) {
-                        overlayRef.current.setPosition(coords);
-                        setSelectedLocation({
-                            suburb: properties.suburb,
-                            street: properties.street
-                        });
-                    }
+                    overlayRef.current.setPosition(coords);
+                    setSelectedLocation({
+                        suburb: properties.suburb,
+                        street: properties.street
+                    });
                 }
             } else {
                 overlayRef.current.setPosition(undefined);
@@ -319,7 +225,7 @@ const ChristmasLightsMap = () => {
         return () => {
             map.setTarget(undefined);
         };
-    }, [SUBURB_COORDINATES]);
+    }, []);
 
     const handleStreetClick = async (suburb, street) => {
         try {
@@ -351,22 +257,20 @@ const ChristmasLightsMap = () => {
                 // Update selected location
                 setSelectedLocation({ suburb, street });
 
-                // Pan to location
+                // Pan and zoom to location
                 mapInstanceRef.current.getView().animate({
                     center: coordinates,
-                    zoom: 16,
+                    zoom: 17, // Increased zoom level for better street view
                     duration: 1000
                 });
 
-                // Scroll to map on mobile
-                if (window.innerWidth < 768) { // md breakpoint
-                    const mapElement = document.getElementById('map');
-                    if (mapElement) {
-                        mapElement.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
-                    }
+                // Scroll to map
+                const mapElement = document.getElementById('map');
+                if (mapElement) {
+                    mapElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
                 }
             }
         } catch (error) {
@@ -411,7 +315,7 @@ const ChristmasLightsMap = () => {
                 </div>
 
                 {/* Main Content */}
-                <div className="pt-24 px-4 sm:px-6">
+                <div className="lg:pt-60 pt-24 px-4 sm:px-6">
                     {/* Carousel Section */}
 
                     <div className="w-full max-w-7xl mx-auto mb-8  h-[40vh] flex items-center flex-col justify-end ">
@@ -527,7 +431,7 @@ const ChristmasLightsMap = () => {
                             </Accordion>
                             {/* Map */}
                             <div className="md:col-span-3">
-                                <div className="bg-card/70 backdrop-blur-xl rounded-2xl shadow-sm border border-border overflow-hidden h-[50vh] md:h-[calc(100vh-8rem)]">
+                                <div id="map" className="bg-card/70 backdrop-blur-xl rounded-2xl shadow-sm border border-border overflow-hidden h-[50vh] md:h-[calc(100vh-8rem)]">
                                     <div ref={mapRef} className="w-full h-full" />
                                     <div
                                         ref={popupRef}
